@@ -77,7 +77,9 @@ function BasicElements() {
   const addr = useRecoilValue(addrState);
 
   React.useEffect(() => {
+    depositStatus();
     const intervalId = setInterval(() => {
+      depositStatus();
       updateStates();
     }, 5000);
 
@@ -88,59 +90,55 @@ function BasicElements() {
     updateStates();
   }, [addr]);
 
+  async function depositStatus() {
+    const newMeanDepositAmount = await getDepositAmount("deposit");
+    const newMeanRate = await getInterestRate("deposit");
+    const newEventMeanDepositAmount = await getDepositAmount("event");
+    const newEventMeanRate = await getInterestRate("event");
+
+    setMeanDepositAmount(newMeanDepositAmount);
+    setMeanRate(newMeanRate);
+    setEventMeanDepositAmount(newEventMeanDepositAmount);
+    setEventMeanRate(newEventMeanRate);
+  }
+
   async function updateStates() {
     let newIsKlaySwap;
-    let newMeanDepositAmount;
-    let newMeanRate;
     let newMeanWithdrawable;
     let newMeanReward;
     let newIsDeposit;
 
-    let newEventMeanDepositAmount;
-    let newEventMeanRate;
     let newEventMeanWithdrawable;
     let newEventMeanReward;
     let newIsEventDeposit;
     let newIsEventSwap;
     try {
-      newMeanDepositAmount = await getDepositAmount("deposit");
-      newMeanRate = await getInterestRate("deposit");
       newMeanWithdrawable = await getWithdrawableAmount("deposit");
       newMeanReward = await getInterest("deposit");
       newIsKlaySwap = await isAllowance("klaySwap");
       newIsDeposit = await isAllowance("deposit");
 
-      newEventMeanDepositAmount = await getDepositAmount("event");
-      newEventMeanRate = await getInterestRate("event");
       newEventMeanWithdrawable = await getWithdrawableAmount("event");
       newEventMeanReward = await getInterest("event");
       newIsEventDeposit = await isAllowance("event");
       newIsEventSwap = await isEventAllowance("eventFactory");
     } catch (error) {
-      newMeanDepositAmount = 0;
-      newMeanRate = 0;
       newMeanWithdrawable = 0;
       newMeanReward = 0;
       newIsKlaySwap = false;
       newIsDeposit = false;
 
-      newEventMeanDepositAmount = 0;
-      newEventMeanRate = 0;
       newEventMeanWithdrawable = 0;
       newEventMeanReward = 0;
       newIsEventDeposit = false;
       newIsEventSwap = false;
     }
     // 상태 업데이트
-    setMeanDepositAmount(newMeanDepositAmount);
-    setMeanRate(newMeanRate);
     setMeanWithdrawable(newMeanWithdrawable);
     setMeanReward(newMeanReward);
     setIsKlaySwap(newIsKlaySwap);
     setIsDeposit(newIsDeposit);
 
-    setEventMeanDepositAmount(newEventMeanDepositAmount);
-    setEventMeanRate(newEventMeanRate);
     setEventMeanWithdrawable(newEventMeanWithdrawable);
     setEventMeanReward(newEventMeanReward);
     setIsEventDeposit(newIsEventDeposit);
@@ -245,6 +243,8 @@ function BasicElements() {
                         color="danger"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           try {
                             const txHash = await approveContract("klaySwap");
                             if (txHash) {
@@ -270,6 +270,8 @@ function BasicElements() {
                         color="info"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           try {
                             const txHash = await klayToMeanSwap(
                               meanToKlayOutputAmount,
@@ -309,6 +311,7 @@ function BasicElements() {
                       style={{
                         borderRadius: "0px",
                         height: "80px",
+                        fontSize: "18px",
                         marginBottom: "30px",
                       }}
                       onChange={(e) => {
@@ -321,7 +324,11 @@ function BasicElements() {
                       value={eventMeanToKlayAmount}
                       placeholder="Output Amount"
                       type="number"
-                      style={{ borderRadius: "0px", height: "80px" }}
+                      style={{
+                        borderRadius: "0px",
+                        height: "80px",
+                        fontSize: "18px",
+                      }}
                       onChange={(e) => {
                         if (Number(e.target.value) < 0) return;
                         setEventMeanToKlayAmount(e.target.value);
@@ -345,6 +352,8 @@ function BasicElements() {
                         color="danger"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           try {
                             const txHash = await eventApproveContract(
                               "eventFactory"
@@ -372,6 +381,8 @@ function BasicElements() {
                         color="info"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           try {
                             const txHash = await eventTokenToKlay(
                               eventMeanToKlayAmount
@@ -497,6 +508,7 @@ function BasicElements() {
                         borderRadius: "0px",
                         height: "80px",
                         marginBottom: "30px",
+                        fontSize: "18px",
                       }}
                       onChange={(e) => {
                         if (Number(e.target.value) < 0) return;
@@ -514,6 +526,8 @@ function BasicElements() {
                           color="danger"
                           size="lg"
                           onClick={async () => {
+                            if (addr.toLocaleLowerCase() === "login")
+                              return alert("Login is required.");
                             try {
                               const txHash = await approveContract("deposit");
                               if (txHash) {
@@ -539,6 +553,8 @@ function BasicElements() {
                           color="danger"
                           size="lg"
                           onClick={async () => {
+                            if (addr.toLocaleLowerCase() === "login")
+                              return alert("Login is required.");
                             const txHash = await meanDeposit(
                               "deposit",
                               meanDepositValue
@@ -565,6 +581,7 @@ function BasicElements() {
                         borderRadius: "0px",
                         height: "80px",
                         marginBottom: "30px",
+                        fontSize: "18px",
                       }}
                       onChange={(e) => {
                         if (Number(e.target.value) < 0) return;
@@ -585,6 +602,8 @@ function BasicElements() {
                         color="info"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           const txHash = await meanWithdraw(
                             "deposit",
                             meanWithDrawValue
@@ -624,6 +643,8 @@ function BasicElements() {
                         color="info"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           const txHash = await meanClaim("deposit");
                           if (txHash) {
                             const updatedTxHistoryArray = [
@@ -699,6 +720,7 @@ function BasicElements() {
                         borderRadius: "0px",
                         height: "80px",
                         marginBottom: "30px",
+                        fontSize: "18px",
                       }}
                     ></Input>
                     <div
@@ -720,6 +742,7 @@ function BasicElements() {
                         borderRadius: "0px",
                         height: "80px",
                         marginBottom: "30px",
+                        fontSize: "18px",
                       }}
                     ></Input>
                     <div
@@ -757,6 +780,8 @@ function BasicElements() {
                         color="info"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           await meanClaim();
                         }}
                       >
@@ -830,6 +855,7 @@ function BasicElements() {
                       style={{
                         borderRadius: "0px",
                         height: "80px",
+                        fontSize: "18px",
                         marginBottom: "30px",
                       }}
                       onChange={(e) => {
@@ -848,6 +874,8 @@ function BasicElements() {
                           color="danger"
                           size="lg"
                           onClick={async () => {
+                            if (addr.toLocaleLowerCase() === "login")
+                              return alert("Login is required.");
                             try {
                               const txHash = await approveContract("event");
                               if (txHash) {
@@ -873,6 +901,8 @@ function BasicElements() {
                           color="danger"
                           size="lg"
                           onClick={async () => {
+                            if (addr.toLocaleLowerCase() === "login")
+                              return alert("Login is required.");
                             const txHash = await meanDeposit(
                               "event",
                               eventMeanDepositValue
@@ -899,6 +929,7 @@ function BasicElements() {
                         borderRadius: "0px",
                         height: "80px",
                         marginBottom: "30px",
+                        fontSize: "18px",
                       }}
                       onChange={(e) => {
                         if (Number(e.target.value) < 0) return;
@@ -919,6 +950,8 @@ function BasicElements() {
                         color="info"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           const txHash = await meanWithdraw(
                             "event",
                             eventMeanWithDrawValue
@@ -958,6 +991,8 @@ function BasicElements() {
                         color="info"
                         size="lg"
                         onClick={async () => {
+                          if (addr.toLocaleLowerCase() === "login")
+                            return alert("Login is required.");
                           const txHash = await meanClaim("event");
                           if (txHash) {
                             const updatedTxHistoryArray = [

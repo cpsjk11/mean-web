@@ -8,9 +8,9 @@ import { eventFactoryAddr, eventFactoryABI } from "./eventFactory";
 import { eventTokenAddr, eventTokenAbi } from "./eventToken";
 
 const Caver = require("caver-js");
-const caver = new Caver("https://public-en-cypress.klaytn.net");
+const caver = new Caver("https://public-en.node.kaia.io");
 
-let web3 = new Web3("https://public-en-cypress.klaytn.net");
+let web3 = new Web3("https://public-en.node.kaia.io");
 let address;
 
 const zeroAddress = "0x0000000000000000000000000000000000000000";

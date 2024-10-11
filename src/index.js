@@ -44,7 +44,7 @@ root.render(
   <RecoilRoot>
     <BrowserRouter>
       <Routes>
-        <Route path="/index" element={<Index />} />
+        <Route path="/" element={<Index />} />
         <Route path="/nucleo-icons" element={<NucleoIcons />} />
         <Route path="/landing-page" element={<LandingPage />} />
         <Route path="/profile-page" element={<ProfilePage />} />
